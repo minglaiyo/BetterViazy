@@ -24,7 +24,7 @@ public class PermissionHelper {
                   String customSu = sp.getString("su_command", "").trim();
                   String command = customSu.isEmpty() ? "su" : customSu;
 
-                  Process process = Runtime.getRuntime().exec(command + " -c id");
+                  java.lang.Process process = Runtime.getRuntime().exec(command + " -c id");
                   int exitCode = process.waitFor();
                   granted = exitCode == 0;
                 } catch (Exception e) {

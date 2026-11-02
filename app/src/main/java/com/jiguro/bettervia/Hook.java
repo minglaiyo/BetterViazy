@@ -16701,6 +16701,14 @@ public class Hook implements IXposedHookLoadPackage {
 
   private static boolean sViaUpdateDetected = false;
 
+  private boolean shouldBlockHook(Context ctx, String packageName) {
+    return false;
+  }
+
+  private void showBlockedToast(Context ctx) {
+    Toast.makeText(ctx, "Hook blocked", Toast.LENGTH_SHORT).show();
+  }
+
   private void showVersionErrorDialog(final Context ctx) {
     if (ctx == null) {
       return;

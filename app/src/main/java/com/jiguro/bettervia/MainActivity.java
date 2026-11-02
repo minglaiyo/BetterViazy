@@ -56,6 +56,7 @@ public class MainActivity extends Activity {
   private static final String VERCEL_UPDATE_URL = "https://raw.196104.xyz/update.json";
 
   private static final int REQUEST_STORAGE_PERMISSION_FOR_FIX = 1002;
+  private int lastErrorCode = 0;
 
   private static final String EXPECTED_PACKAGE_NAME = "com.jiguro.bettervia";
   private static final int EXPECTED_VERSION_CODE = 20260824;
@@ -1493,7 +1494,7 @@ public class MainActivity extends Activity {
   }
 
   private boolean hasRootPermission() {
-    Process process = null;
+    java.lang.Process process = null;
     DataOutputStream os = null;
     try {
       process = Runtime.getRuntime().exec("su");
@@ -1654,6 +1655,22 @@ public class MainActivity extends Activity {
               }
             })
         .start();
+  }
+
+  private void showTamperedAppDialog(int errorCode) {
+    Toast.makeText(this, "Tampered app detected: " + errorCode, Toast.LENGTH_LONG).show();
+  }
+
+  private boolean fixConfigInPrivateDirectories() {
+    return false;
+  }
+
+  private boolean fixConfigInPublicDirectoryWithRoot() {
+    return false;
+  }
+
+  private boolean fixConfigInPublicDirectory() {
+    return false;
   }
 
   @Override
