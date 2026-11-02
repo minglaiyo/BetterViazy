@@ -228,12 +228,13 @@ public final class AboutPage {
       logo.setTextColor(titleBase);
       logo.setIncludeFontPadding(false);
 
-      final RuntimeShader titleShader;
+      RuntimeShader shaderTmp = null;
       try {
-        titleShader = cardBg.createTitleShader();
+        shaderTmp = cardBg.createTitleShader();
       } catch (Throwable e) {
-        titleShader = null;
+        shaderTmp = null;
       }
+      final RuntimeShader titleShader = shaderTmp;
       if (titleShader == null) {
         int[] initTc = titleColorsFromAurora(cardBg.getAuroraColors(), isDark);
         final float logoW = logo.getPaint().measureText(logo.getText().toString());
