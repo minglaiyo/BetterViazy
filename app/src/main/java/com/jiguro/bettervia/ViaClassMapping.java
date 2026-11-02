@@ -145,7 +145,7 @@ public class ViaClassMapping {
       new HashMap<>();
 
   private static final int[] DEFAULT_VERSION_CODES = {
-    20260823, 20260706, 20260410, 20260211, 20251223, 20251024, 20250907, 20250713
+    20260920, 20260823, 20260706, 20260410, 20260211, 20251223, 20251024, 20250907, 20250713
   };
 
   static {
@@ -159,6 +159,54 @@ public class ViaClassMapping {
     for (ResourceKey key : ResourceKey.values()) {
       DEFAULT_RESOURCE_MAPPINGS.put(key, new ResourceMapping(key.getDefaultResourceId()));
     }
+
+    Map<ClassMethodKey, ClassMethodMapping> v740Map = new HashMap<>();
+    v740Map.put(ClassMethodKey.VIA_CHECK_CLASS, new ClassMethodMapping("s9.k", "u", "s9.a"));
+    v740Map.put(ClassMethodKey.PRIVACY_LOCK_WHITELIST, new ClassMethodMapping("hb.y1", "g3"));
+    v740Map.put(ClassMethodKey.PRIVACY_LOCK_OVERLAY, new ClassMethodMapping("z5.a$a", "a"));
+    v740Map.put(ClassMethodKey.SETTINGS_ITEM_CLASS, new ClassMethodMapping("b6.q", ""));
+    v740Map.put(ClassMethodKey.COMPONENT_BLOCK_CLASS, new ClassMethodMapping("b6.q", ""));
+    v740Map.put(ClassMethodKey.COMPONENT_CHECK_METHOD, new ClassMethodMapping("hb.d", "V1"));
+    v740Map.put(
+        ClassMethodKey.FIREBASE_ANALYTICS,
+        new ClassMethodMapping("com.google.firebase.analytics.FirebaseAnalytics", "a", ""));
+    v740Map.put(ClassMethodKey.PRIVACY_LOCK_VERIFY_1, new ClassMethodMapping("d8.pa", "H0"));
+    v740Map.put(ClassMethodKey.PRIVACY_LOCK_VERIFY_2, new ClassMethodMapping("t8.f", "f"));
+    v740Map.put(ClassMethodKey.SCRIPT_REPO_1, new ClassMethodMapping("v9.c", "h"));
+    v740Map.put(ClassMethodKey.SCRIPT_REPO_2, new ClassMethodMapping("d8.l6", "A9"));
+    v740Map.put(ClassMethodKey.HOMEPAGE_CSS_WRITER_A, new ClassMethodMapping("x9.k", "a2"));
+    v740Map.put(ClassMethodKey.VIDEO_PLAYER_CLASS, new ClassMethodMapping("com.tuyafeng.support.widget.v", ""));
+    v740Map.put(
+        ClassMethodKey.VIDEO_PLAYER_FIELD_SPEED,
+        new ClassMethodMapping("com.tuyafeng.support.widget.v", "z", ""));
+    v740Map.put(
+        ClassMethodKey.VIDEO_PLAYER_FIELD_CALLBACK,
+        new ClassMethodMapping("com.tuyafeng.support.widget.v", "w", ""));
+    v740Map.put(
+        ClassMethodKey.VIDEO_PLAYER_FIELD_SPEED_TEXT,
+        new ClassMethodMapping("com.tuyafeng.support.widget.v", "o", ""));
+    v740Map.put(
+        ClassMethodKey.VIDEO_PLAYER_FIELD_START_X,
+        new ClassMethodMapping("com.tuyafeng.support.widget.v", "Q", ""));
+    v740Map.put(
+        ClassMethodKey.VIDEO_PLAYER_FIELD_START_Y,
+        new ClassMethodMapping("com.tuyafeng.support.widget.v", "R", ""));
+    v740Map.put(
+        ClassMethodKey.VIDEO_PLAYER_CALLBACK_SET_SPEED,
+        new ClassMethodMapping("com.tuyafeng.support.widget.v$b", "c", ""));
+    v740Map.put(ClassMethodKey.SEARCH_CORRECTION_HOOK, new ClassMethodMapping("j6.g0", "h"));
+    v740Map.put(ClassMethodKey.WINDOW_FULLSCREEN_HELPER, new ClassMethodMapping("a9.l3", "n"));
+    v740Map.put(ClassMethodKey.WINDOW_FULLSCREEN_CHECK, new ClassMethodMapping("a9.l3", "g"));
+    v740Map.put(ClassMethodKey.SHELL_SOFT_INPUT_FLAG, new ClassMethodMapping("mark.via.Shell", "k0"));
+    v740Map.put(ClassMethodKey.CUSTOMTAB_SOFT_INPUT_FLAG, new ClassMethodMapping("mark.via.CustomTab", "X"));
+    VERSION_MAPPINGS.put(20260920, v740Map);
+
+    Map<ResourceKey, ResourceMapping> v740ResourceMap = new HashMap<>();
+    v740ResourceMap.put(ResourceKey.DOWNLOAD_DIALOG_COPY_LINK_BUTTON, new ResourceMapping(0x7f0a00c5));
+    v740ResourceMap.put(ResourceKey.DOWNLOAD_DIALOG_CANCEL_BUTTON, new ResourceMapping(0x7f0a00c9));
+    v740ResourceMap.put(ResourceKey.DOWNLOAD_DIALOG_OK_BUTTON, new ResourceMapping(0x7f0a00c4));
+    v740ResourceMap.put(ResourceKey.DOWNLOAD_DIALOG_SHARE_BUTTON, new ResourceMapping(0x7f09abcd));
+    RESOURCE_ID_MAPPINGS.put(20260920, v740ResourceMap);
 
     Map<ClassMethodKey, ClassMethodMapping> v733Map = new HashMap<>();
     v733Map.put(ClassMethodKey.VIA_CHECK_CLASS, new ClassMethodMapping("r9.k", "u", "r9.a"));
@@ -1097,3 +1145,4 @@ public class ViaClassMapping {
     return fixedCount;
   }
 }
+
