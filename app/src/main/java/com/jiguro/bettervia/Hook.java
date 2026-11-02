@@ -801,8 +801,25 @@ public class Hook implements IXposedHookLoadPackage {
                       @Override
                       protected void afterHookedMethod(MethodHookParam param) throws Throwable {
                         Object clicked = XposedHelpers.getObjectField(param.thisObject, "d");
-                        if (clicked == null || moduleButtonRef == null) return;
-                        if (clicked == moduleButtonRef) {
+                        if (clicked == null) return;
+                        boolean isModuleButton = clicked == moduleButtonRef;
+                        if (!isModuleButton) {
+                          // 适配器层注入的按钮可能不是 moduleButtonRef 指向的最新一个，
+                          // 按设置项 id 1000 识别同样放行。
+                          try {
+                            String settingsItemClass =
+                                ViaClassMapping.getClassName(
+                                    ViaClassMapping.ClassMethodKey.SETTINGS_ITEM_CLASS, ctx);
+                            Class<?> itemClass = XposedHelpers.findClass(settingsItemClass, cl);
+                            if (itemClass.isInstance(clicked)) {
+                              Object id = XposedHelpers.callMethod(clicked, "c");
+                              isModuleButton =
+                                  id instanceof Number && ((Number) id).intValue() == 1000;
+                            }
+                          } catch (Throwable ignored) {
+                          }
+                        }
+                        if (isModuleButton) {
                           bvLog("[BetterVia] 模块按钮被点击");
                           showSettingsPage(ctx);
                         }
@@ -811,6 +828,45 @@ public class Hook implements IXposedHookLoadPackage {
                 bvLog("[BetterVia] 模块按钮Hook已设置");
               } catch (Throwable t) {
                 bvLog("[BetterVia] Hook模块按钮失败: " + t);
+              }
+
+              // 7.4 适配器层注入：日志证实 hb.y1.g3 在 7.4 设置流程里从未被调用，
+              // 上游那种“挂列表方法”的注入点在 7.4 上是死的。改在设置列表共用的
+              // 适配器层追加：z5.f 是各设置页共用的 RecyclerView 适配器（构造入参即
+              // 初始列表），b6.k 是列表刷新时的 DiffUtil 回调（构造入参为旧/新列表）。
+              // 两处都只对“元素全是设置项模型”的列表追加，且已有 id 1000 时不再追加。
+              // 仅当加载的是 7.4 映射（白名单类为 hb.y1）时启用，其它版本仍走上面原有的注入。
+              if ("hb.y1".equals(privacyLockWhitelistClass)) {
+                try {
+                  Class<?> adapterClass = XposedHelpers.findClass("z5.f", cl);
+                  XposedHelpers.findAndHookConstructor(
+                      adapterClass,
+                      List.class,
+                      new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                          List<Object> list = (List<Object>) param.args[0];
+                          List<Object> withButton = appendModuleButtonToSettingsList(list, ctx, cl);
+                          if (withButton != null) param.args[0] = withButton;
+                        }
+                      });
+                  Class<?> diffCallbackClass = XposedHelpers.findClass("b6.k", cl);
+                  XposedHelpers.findAndHookConstructor(
+                      diffCallbackClass,
+                      List.class,
+                      List.class,
+                      new XC_MethodHook() {
+                        @Override
+                        protected void beforeHookedMethod(MethodHookParam param) throws Throwable {
+                          List<Object> newList = (List<Object>) param.args[1];
+                          List<Object> withButton = appendModuleButtonToSettingsList(newList, ctx, cl);
+                          if (withButton != null) param.args[1] = withButton;
+                        }
+                      });
+                  bvLog("[BetterVia] 适配器层模块按钮注入已设置");
+                } catch (Throwable t) {
+                  bvLog("[BetterVia] 适配器层模块按钮注入设置失败: " + t);
+                }
               }
 
               setupSettingsPageBackKeyHook(cl);
@@ -14374,6 +14430,39 @@ public class Hook implements IXposedHookLoadPackage {
       bvLog("[BetterVia] Via语言环境已切换: " + newLoc.toString());
     } catch (Exception e) {
       bvLog("[BetterVia] 切换Locale失败: " + e);
+    }
+  }
+
+  // 适配器层注入用：如果 list 是设置项列表（元素均为设置项模型 b6.q 及其子类），
+  // 且尚未含有 id 为 1000 的模块按钮，则返回追加了模块按钮的新列表；否则返回 null。
+  // 返回新列表而不是原地 add，避免调用方持有的旧列表引用与 DiffUtil 新旧对照错乱。
+  private List<Object> appendModuleButtonToSettingsList(
+      List<Object> list, Context ctx, ClassLoader cl) {
+    try {
+      if (list == null || list.isEmpty()) return null;
+      String settingsItemClass =
+          ViaClassMapping.getClassName(
+              ViaClassMapping.ClassMethodKey.SETTINGS_ITEM_CLASS, ctx);
+      Class<?> itemClass = XposedHelpers.findClass(settingsItemClass, cl);
+      Class<?> baseClass = itemClass.getSuperclass();
+      if (baseClass == null) return null;
+      for (Object el : list) {
+        if (el == null || !baseClass.isInstance(el)) return null;
+        if (itemClass.isInstance(el)) {
+          Object id = XposedHelpers.callMethod(el, "c");
+          if (id instanceof Number && ((Number) id).intValue() == 1000) return null;
+        }
+      }
+      String txt =
+          LocalizedStringProvider.getInstance().get(ctx, "module_settings");
+      Object btn = XposedHelpers.newInstance(itemClass, 1000, txt);
+      moduleButtonRef = btn;
+      List<Object> nList = new ArrayList<>(list);
+      nList.add(btn);
+      return nList;
+    } catch (Throwable t) {
+      bvLog("[BetterVia] 追加模块按钮失败: " + t);
+      return null;
     }
   }
 
